@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob-promise');
-const constants = require('./helpers/constants');
 const cleanPath = require('./helpers/clean-path');
 const removeDoubledSolidityVersion = require('./helpers/remove-doubled-solidity-version');
 const replaceAllImportsRecursively = require('./helpers/replace-all-imports-recursively');
@@ -10,15 +9,15 @@ let flat = async function (filePath) {
     const inputFileContent = await fs.readFileSync(filePath, 'utf8');
     const fileName = path.basename(filePath, '.sol');
     let parentDirName = path.dirname(filePath);
-    let dir = parentDirName + constants.SLASH;
+    let dir = parentDirName + "/";
 
-    const isAbsolutePath = !dir.startsWith(constants.DOT);
+    const isAbsolutePath = !dir.startsWith(".");
     if (!isAbsolutePath) {
-        dir = __dirname + constants.SLASH + dir
+        dir = __dirname + "/" + dir
     }
 
     dir = cleanPath(dir);
-    const pathLoc = parentDirName + constants.SOL;
+    const pathLoc = parentDirName + '/**/*.sol';
     let srcFiles = await getSourceFiles(dir, pathLoc);
 
     return await replaceImports(inputFileContent, dir, fileName, srcFiles);
@@ -29,10 +28,13 @@ async function getSourceFiles(dir, path) {
 }
 
 async function replaceImports(inputFileContent, dir, fileName_raw, srcFiles) {
-    const outDir = './out';
 
     let outputFileContent = await replaceAllImportsRecursively(inputFileContent, dir, srcFiles);
     outputFileContent = removeDoubledSolidityVersion(outputFileContent);
+
+    // This could come from config
+    const outDir = './out';
+
     if (!fs.existsSync(outDir)) {
         fs.mkdirSync(outDir);
     }
@@ -40,7 +42,6 @@ async function replaceImports(inputFileContent, dir, fileName_raw, srcFiles) {
     const fileName = `${fileName_raw}_flat.sol`;
     const filePath = `${outDir}/${fileName}`;
     fs.writeFileSync(filePath, outputFileContent);
-    // console.log(`Success! Flat file ${fileName} is generated to  ${outDir} directory`)
 
     return {fileName, filePath};
 }

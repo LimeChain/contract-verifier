@@ -1,5 +1,5 @@
-const findAllImportPaths = require('./find-all-import-paths')
-const replaceAllImportsInCurrentLayer = require('./replace-all-imports-in-current-layer')
+const findAllImportPaths = require('./find-all-import-paths');
+const replaceAllImportsInCurrentLayer = require('./replace-all-imports-in-current-layer');
 
 /*
  * Recursively replaces all imports

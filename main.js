@@ -1,26 +1,9 @@
 const axios = require('axios');
 const querystring = require('querystring');
 const ethers = require("ethers");
-const bs58 = require('bs58');
 const fs = require('fs');
 const path = require('path');
 const {flat} = require('./flattener.js');
-
-let getBytes32FromIpfsHash = (ipfsListing) => {
-    return "0x" + bs58.decode(ipfsListing).slice(2).toString('hex')
-};
-
-let getIpfsHashFromBytes32 = (bytes32Hex) => {
-    const hashHex = "1220" + bytes32Hex.slice(2);
-    const hashBytes = Buffer.from(hashHex, 'hex');
-    return bs58.encode(hashBytes);
-};
-
-let flatter = async () => {
-    let filePath = "./contracts/Oracle/TokenExchangeOracle.sol";
-    let result = await flat(filePath);
-    console.log(result);
-};
 
 // Verify
 let verify = async () => {
@@ -30,7 +13,7 @@ let verify = async () => {
     let types = ["address", "uint256"];
     let values = ["0xf5568294546e104cfcC95257D9b07eeDA6FA70ad", 23500];
     let encodedConstructorArgs = await encoder.encode(types, values);
-    encodedConstructorArgs = encodedConstructorArgs.substr(2); // Remove the 0x
+    encodedConstructorArgs = encodedConstructorArgs.substr(2);
 
     // Flatten the contract
     // Change to your contract path
@@ -85,6 +68,5 @@ let checkVerification = async () => {
 let run = async () => {
     // await verify();
     await checkVerification();
-    // await flatter();
 };
 run();
